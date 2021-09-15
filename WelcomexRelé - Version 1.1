@@ -1,0 +1,254 @@
+//https://docs.google.com/spreadsheets/d/18EpzdMn0EI-k04ly8UiKCLj5bKJFZx6h9ym4rLe49TA/edit?usp=sharing
+#include <SPI.h>      // incluye libreria bus SPI
+#include <MFRC522.h>      // incluye librería específica para MFRC522
+
+const int rele = 6; // la variable constante "relé" responde al pin 2.
+const int ledverde = 4;
+const int ledrojo = 5;
+
+#define RST_PIN  9      // constante para referenciar pin de reset
+#define SS_PIN  10      // constante para referenciar pin de slave select
+
+MFRC522 mfrc522(SS_PIN, RST_PIN); // crea objeto mfrc522 enviando pines de slave select y reset
+
+byte LecturaUID[4];         // crea array para almacenar el UID leído
+byte Usuario0[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario1[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario2[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario3[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario4[4]= {0x0C, 0xA0, 0x40, 0x4A} ;
+byte Usuario5[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario6[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario7[4]= {0x1C, 0x59, 0xFA, 0x38} ;
+byte Usuario8[4]= {0x9C, 0x6A, 0x39, 0x4A} ;
+byte Usuario9[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario10[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario11[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario12[4]= {0xD3, 0x49, 0xC3, 0xAB};
+byte Usuario13[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario14[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario15[4]= {0x8C, 0xCF, 0x3F, 0x4A} ;
+byte Usuario16[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario17[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario18[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario19[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario20[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario21[4]= {0x59, 0x2A, 0x50, 0x5A} ;
+byte Usuario22[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario23[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario24[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario25[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario26[4]= {0x1C, 0x84, 0x27, 0x4A} ;
+byte Usuario27[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario28[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario29[4]= {0x2C, 0xBC, 0xFB, 0x37} ;
+byte Usuario30[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario31[4]= {0x5C, 0xBC, 0x38, 0x49} ;
+byte Usuario32[4]= {0x99, 0xCE, 0x8F, 0x59} ;
+byte Usuario33[4]= {0xAC, 0xA8, 0x29, 0x49} ;
+byte Usuario34[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario35[4]= {0x4C, 0x46, 0xB5, 0x2F} ;
+byte Usuario36[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario37[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario38[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario39[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario40[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario41[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario42[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario43[4]= {0x00, 0x00, 0x00, 0x00} ;
+byte Usuario44[4]= {0x4C, 0xE3, 0x37, 0x49} ;
+byte Usuario45[4]= {0x59, 0x42, 0x7B, 0xA3} ;
+byte Usuario46[4]= {0x00, 0x00, 0x00, 0x00} ;
+
+void setup() {
+  Serial.begin(9600);     // inicializa comunicacion por monitor serie a 9600 bps
+  SPI.begin();        // inicializa bus SPI
+  mfrc522.PCD_Init();     // inicializa modulo lector
+  Serial.println("Listo");    // Muestra texto Listo
+  pinMode(rele,OUTPUT);
+  pinMode(ledverde,OUTPUT);
+  pinMode(ledrojo,OUTPUT);
+}
+
+void loop() {
+  digitalWrite(ledverde, LOW);
+  digitalWrite(ledrojo, HIGH);
+  if ( ! mfrc522.PICC_IsNewCardPresent())   // si no hay una tarjeta presente
+    return;           // retorna al loop esperando por una tarjeta
+  
+  if ( ! mfrc522.PICC_ReadCardSerial())     // si no puede obtener datos de la tarjeta
+    return;           // retorna al loop esperando por otra tarjeta
+    
+    for (byte i = 0; i < mfrc522.uid.size; i++) { // bucle recorre de a un byte por vez el UID
+      if (mfrc522.uid.uidByte[i] < 0x10){   // si el byte leido es menor a 0x10
+        }
+        else{           // sino
+          }
+          LecturaUID[i]=mfrc522.uid.uidByte[i];     // almacena en array el byte del UID leido      
+          }            
+                    
+          if(comparaUID(LecturaUID, Usuario0))    // llama a funcion comparaUID con Usuario1
+            {Serial.println("Welcome, Agustina Neu");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario1))
+            {Serial.println("Welcome, Anabella Prete");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario2))
+            {Serial.println("Welcome, Bárbara Gavensky");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario3))
+            {Serial.println("Welcome, Camila Martucci");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario4))
+            {Serial.println("Welcome, Carla Litardo");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario5))
+            {Serial.println("Welcome, Carolina Quaglia");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario6))
+            {Serial.println("Welcome, Carolina Mainnevret");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario7))
+            {Serial.println("Welcome, Carolina Tarda");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario8))
+            {Serial.println("Welcome, Claudia Raquel Castro");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario9))
+            {Serial.println("Welcome, Cristina Pedreira");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario10))
+            {Serial.println("Welcome, Diego Onnainty");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario11))
+            {Serial.println("Welcome, Eliana Chiurco");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario12))
+            {Serial.println("Welcome, Emiliano Piaggio");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario13))
+            {Serial.println("Welcome, Ezequiel Gigante");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario14))
+            {Serial.println("Welcome, Matías Vizzocero");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario15))
+            {Serial.println("Welcome, Fernanda Navarro");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario16))
+            {Serial.println("Welcome, Florencia Cruchi");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario17))
+            {Serial.println("Welcome, Germán Salvarezza");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario18))
+            {Serial.println("Welcome, Ignacio Cristensen");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario19))
+            {Serial.println("Welcome, Juliana Horán");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario20))
+            {Serial.println("Welcome, Julieta Rojas");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario21))
+            {Serial.println("Welcome, Laura Olmedo");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario22))
+            {Serial.println("Welcome, Laura Caro");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario23))
+            {Serial.println("Welcome, Lorena Lanzani");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario24))
+            {Serial.println("Welcome, Lucas Riquel");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario25))
+            {Serial.println("Welcome, Lucas Cifulella");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario26))
+            {Serial.println("Welcome, Lucía Gioia");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario27))
+            {Serial.println("Welcome, Manuel Aime");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario28))
+            {Serial.println("Welcome, María Falabella");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario29))
+            {Serial.println("Welcome, María Eliana Solana");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario30))
+            {Serial.println("Welcome, Mariela Rech");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario31))
+            {Serial.println("Welcome, Martín Rey");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario32))
+            {Serial.println("Welcome, Matías Vizzocero");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario33))
+            {Serial.println("Welcome, Mauro Flores");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario34))
+            {Serial.println("Welcome, Micaela García");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario35))
+            {Serial.println("Welcome, Nicolás Garabello");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario36))
+            {Serial.println("Welcome, Oriana Sánchez Pirra");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario37))
+            {Serial.println("Welcome, Ornella Mancini");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario38))
+            {Serial.println("Welcome, Pamela Vietri");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario39))
+            {Serial.println("Welcome, Rocío Cogo");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario40))
+            {Serial.println("Welcome, Rocío González");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario41))
+            {Serial.println("Welcome, Silvia Leguizamón");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario42))
+            {Serial.println("Welcome, Silvina Rossi");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario43))
+            {Serial.println("Welcome, Valentina Terrizano");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario44))
+            {Serial.println("Welcome, Valeria López");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario45))
+            {Serial.println("Welcome, Victoria Benech Arnold");
+            abrirpuerta();}
+          else if(comparaUID(LecturaUID, Usuario46))
+            {Serial.println("Welcome, Carolina Tarda");
+            abrirpuerta();}
+          else           // si retorna falso
+            Serial.println("Por favor, diríjase a Administración");    // muestra texto equivalente a acceso denegado          
+                  
+                  mfrc522.PICC_HaltA();     // detiene comunicación con tarjeta               
+}
+
+boolean comparaUID(byte lectura[],byte usuario[]) // funcion comparaUID
+{
+  for (byte i=0; i < mfrc522.uid.size; i++){    // bucle recorre de a un byte por vez el UID
+  if(lectura[i] != usuario[i])        // si byte de UID leído es distinto a usuario
+    return(false);          // retorna falso
+  }
+  return(true);           // si los 4 bytes coinciden retorna verdadero
+}
+
+void abrirpuerta(){
+  digitalWrite(ledverde, HIGH); //Prende el led.
+  digitalWrite(ledrojo, LOW);
+  digitalWrite(rele, LOW); //Prende el relé.
+  delay(2000); //Delay de 3 segundos.
+  digitalWrite(ledverde, LOW); //Prende el led.
+  digitalWrite(ledrojo, HIGH);
+  digitalWrite(rele, HIGH); //Apaga el relé.
+ }

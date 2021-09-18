@@ -239,6 +239,18 @@ boolean comparaUID(byte lectura[],byte usuario[]) // funcion comparaUID
   for (byte i=0; i < mfrc522.uid.size; i++){    // bucle recorre de a un byte por vez el UID
   if(lectura[i] != usuario[i])        // si byte de UID leído es distinto a usuario
     return(false);          // retorna falso
+    
+    digitalWrite(ledrojo, LOW);
+    delay (200);
+    digitalWrite(ledrojo, HIGH); 
+    delay (200);
+    digitalWrite(ledrojo, LOW);
+    delay (200);
+    digitalWrite(ledrojo, HIGH); 
+    delay (200);
+    digitalWrite(ledrojo, LOW);
+    delay (200);
+    digitalWrite(ledrojo, HIGH); 
   }
   return(true);           // si los 4 bytes coinciden retorna verdadero
 }
